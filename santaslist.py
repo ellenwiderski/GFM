@@ -3,4 +3,4 @@ import sqlite3
 conn = sqlite3.connect("users.db")
 curs = conn.cursor()
 
-print "hi santa"
+print "hi jesus"
