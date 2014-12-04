@@ -3,8 +3,5 @@ import sqlite3
 conn = sqlite3.connect("users.db")
 curs = conn.cursor()
 
-<<<<<<< HEAD
+
 print "hi jesus"
-=======
-print("hello Cadence")
->>>>>>> acf1e32a4a8333677b12a4e8e4dca68174022aab
