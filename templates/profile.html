@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for list in listdict %}
+	<h1>
+		{{ list }}
+	</h1>
+	<p>
+		{% for item in listdict[list] %}
+
+			{{ item[0] }}
+
+		{% endfor %}
+	{% endfor %}
+	</p>
+{% endblock %}
