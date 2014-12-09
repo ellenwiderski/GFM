@@ -1,0 +1,1 @@
+web: gunicorn santaslist:app --log-file=-
