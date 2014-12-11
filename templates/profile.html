@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% for list in listdict %}
+	{% for list in listdict %}
 	<h1>
 		{{ list }}
 	</h1>
@@ -13,4 +13,31 @@
 		{% endfor %}
 	{% endfor %}
 	</p>
+
+
+{% if isUser %}
+	<form action='' method='post' name='newitem' class='form-horizontal'>
+		<div class="form-group">
+			<div class="dropdown">
+			  <button class="btn btn-default dropdown-toggle" type="button" id="listsdropdown" data-toggle="dropdown" aria-expanded="true">
+			    Dropdown
+			    <span class="caret"></span>
+			  </button>
+			  
+			  <ul class="dropdown-menu" role="menu" aria-labelledby="listsdropdown">
+
+			  {% for list in listdict %}
+			    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{{ list }}</a></li>
+			  {% endfor %}
+			  </ul>
+			</div>
+
+			<div class='col-sm-3'>
+				{{ form.newitem(class='form-control',id='newitem') }}
+			</div>
+			<button type="submit" class='btn btn-default'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+		</div>
+	</form>
+{% endif %}
+
 {% endblock %}
