@@ -1,6 +1,7 @@
-from flask import Flask, request, make_response, render_template, redirect, flash
+from flask import Flask, flash, request, make_response, render_template, redirect, flash, g
 from flask.ext.wtf import Form
-from wtforms import TextField, PasswordField, IntegerField, BooleanField
+from flask.ext.login import LoginManager, login_user, UserMixin, logout_user
+from wtforms import TextField, PasswordField, IntegerField, BooleanField, RadioField
 from wtforms.validators import InputRequired
 import sqlite3
 
@@ -8,8 +9,41 @@ app = Flask(__name__)
 app.debug = True   # need this for autoreload and stack trace
 app.config.from_object('config')
 
-conn = sqlite3.connect("xmasapp.db",check_same_thread = False) #create a connection (most databases are a client-server relationship, where requests are being sent and received
-curs = conn.cursor() #cursor is the position or what row we are on in the db - a pointer to where we are in the db
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+conn = sqlite3.connect("xmasapp.db",check_same_thread = False) 
+curs = conn.cursor()
+
+class User(UserMixin):
+
+    def __init__(self,username,password,display_name,naughty):
+        self.username = username
+        self.password = password
+        self.display_name = display_name
+        self.naughty = naughty
+
+    def get_id(self):
+    	try:
+    		return self.username
+
+    	except AttributeError:
+    		raise NotImplementedError('No `id` attribute - override `get_id`')
+
+    def __repr__(self):
+        return '<User %s>' % (self.username)
+
+    def add(self):
+        c = curs.execute('''INSERT INTO user values('%s','%s','%s',%s,%s);'''%(username,password,display_name,age,naughty))
+        g.conn.commit()
+
+
+@login_manager.user_loader
+def load_user(username):
+    c = curs.execute('''SELECT user_name,password,display_name,naughty from user where user_name = '%s' ''' % username)
+    userrow = c.fetchone()
+    user = User(userrow[0],userrow[1],userrow[2],userrow[3])
+    return user
 
 class LoginForm(Form):
 	username = TextField('Username',validators=[InputRequired()])
@@ -20,83 +54,104 @@ class SignupForm(Form):
 	password = PasswordField('Password',validators=[InputRequired()])
 	retypepassword = PasswordField('RetypePassword',validators=[InputRequired()])
 	display_name = TextField('DisplayName',validators=[InputRequired()])
-	age = IntegerField('Age',validators=[InputRequired()])
-	naughty = BooleanField('Naughty')
+	naughtynice = RadioField('NaughtyOrNice',choices=[('naughty','Naughty'),('nice','Nice')])
 
 class NewItem(Form):
 	newitem = TextField('additem')
 
 
-@app.route('/', methods=['GET','POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
 	form = LoginForm()
 	if form.validate_on_submit():
-		username = form.username.data
-		password = form.password.data
-		user = curs.execute('''SELECT user_name FROM user WHERE user_name = '%s' and password = '%s';'''% (username,password))
-		
-		hasUser = False
-		for i in user:
-			hasUser = True
+		g.user = form.username.data
+		g.password = form.password.data
+		c = curs.execute('''SELECT user_name FROM user WHERE user_name = '%s';''' % g.user)
+		userexists = c.fetchone()
+		if userexists:
+			c = curs.execute('''SELECT password FROM user WHERE password = '%s';''' % g.password)
+			correct = c.fetchone()
+			if correct:
+				user = load_user(g.user)
+				login_user(user)
+				flash("logged in")
+				return redirect("/user/%s" % g.user)
 
-		if not hasUser:
-			return render_template('login.html',form=form)
+			else:
+				return 'Incorrect password'
 		else:
-			resp = make_response(redirect('/user/%s' % username))
-			resp.set_cookie('username',username)
-			return resp
+			return 'User does not exist'
 
 	return render_template('login.html',form=form)
 
+		#login_user(user)
+		#flash("logged in successfully")
+
+		# username = form.username.data
+		# password = form.password.data
+		# user = curs.execute('''SELECT user_name FROM user WHERE user_name = '%s' and password = '%s';'''% (username,password))
+		
+		# hasUser = False
+		# for i in user:
+		# 	hasUser = True
+
+		# if not hasUser:
+		# 	return render_template('login.html',form=form)
+		# else:
+		# 	resp = make_response(redirect('/user/%s' % username))
+		# 	resp.set_cookie('username',username)
+		# 	return resp
+
+		#return redirect('/user/%s' % username)
+
+	#return render_template('login.html',form=form)
+
 @app.route('/user/<username>', methods=['GET','POST'])
 def profile(username):
-	cookieusername = request.cookies.get('username')
-	pageusername = curs.execute('''SELECT user_name FROM user WHERE user_name = '%s'; ''' % username)
 
-	for i in pageusername:
-		form = NewItem()
-		listdict = {}
-		lists = curs.execute('''SELECT list.list_id FROM user, list WHERE list.user_name = user.user_name and list.user_name='%s';'''%username)
-		for list in lists:
-			items = curs.execute('''SELECT item.item_name, item.item_price, item.item_link from item, list, list_item WHERE list_item.list_item_id = list.list_id and list.list_id = '%s';'''%list[0])
-			for item in items:
-				listdict[list[0]] = item[0]
+	form = NewItem()
+	listdict = {}
+	lists = curs.execute('''SELECT list.list_id FROM user, list WHERE list.user_name = user.user_name and list.user_name='%s';'''%username)
+	for list in lists:
+		items = curs.execute('''SELECT item.item_name, item.item_price, item.item_link from item, list, list_item WHERE list_item.list_item_id = list.list_id and list.list_id = '%s';'''%list[0])
+		for item in items:
+			listdict[list[0]] = item[0]
 		
-		if form.validate_on_submit():
-			curs.execute('''INSERT into item values(form.newitem.data,50,"amazon.com")''')
-			items = curs.execute('''SELECT list_item_id FROM list_item ORDER BY list_item_id DESC''')
-			for i in items:
-				highest = i[0]
+		# if form.validate_on_submit():
+		# 	curs.execute('''INSERT into item values(form.newitem.data,50,"amazon.com")''')
+		# 	items = curs.execute('''SELECT list_item_id FROM list_item ORDER BY list_item_id DESC''')
+		# 	for i in items:
+		# 		highest = i[0]
 
-			curs.execute('''INSERT into list_item values(%s,'%s',%s'''%(highest+1,form.newitem.data,listid))
+		# 	curs.execute('''INSERT into list_item values(%s,'%s',%s'''%(highest+1,form.newitem.data,listid))
 
-		if i[0] == cookieusername:
-			return render_template('profile.html',listdict=listdict,form=form,isUser=True)
-		else:
-			return render_template('profile.html',listdict=listdict,form=form,isUser=False)
+		# if i[0] == cookieusername:
+		# 	return render_template('profile.html',listdict=listdict,form=form,isUser=True)
+		# else:
+		# 	return render_template('profile.html',listdict=listdict,form=form,isUser=False)
 
-	return redirect('/')
+	return render_template('profile.html',listdict=listdict,form=form)
 
 @app.route('/signup',methods=['GET','POST'])
 def signup():
 	form = SignupForm()
+
 	if form.validate_on_submit():
-		username = form.username.data
+		user = form.username.data
 		password = form.password.data
 		display_name = form.display_name.data
-		age = form.age.data
-		if form.naughty.data:
-			naughty = 1
-		else:
-			naughty = 0
 
-		user = curs.execute('''SELECT user_name FROM user WHERE user_name = '%s';'''% username)
-		hasUser = False
-		for i in user:
-			hasUser = True
-		if not hasUser:
-			curs.execute('''INSERT INTO user values('%s','%s','%s',%s,%s);'''%(username,password,display_name,age,naughty))
-			conn.commit()
+		if form.naughty.data:
+			naughty = True
+		else:
+			naughty = False
+
+		c = curs.execute('''SELECT user_name FROM user WHERE user_name = '%s';'''% username)
+		userexists = c.fetchone()
+
+		if not userexists:
+			newuser = User(user,password,display_name,naughty)
+			newuser.add()
 			return redirect('/user/%s' % username)
 		else:
 			return render_template('signup.html',form=form)

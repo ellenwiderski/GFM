@@ -30,6 +30,21 @@
 				{{ form.retypepassword(id='retypepassword', type='password',class='form-control') }}
 			</div>
 		</div>
+
+		<div class="form-group">
+			<label for='displayname' class='col-sm-1 control-label'>Display Name:</label>
+			<div class='col-sm-3'>
+				{{ form.display_name(class='form-control',id='displayname') }}
+			</div>
+		</div>
+
+		{% for subfield in form.naughtynice %}
+		<tr>
+			<td>{{subfield}}</td>
+			<td{{subfield.label}}</td>
+		</tr>
+		{% endfor %}
+
 		<button type="submit" class='btn btn-default'>Submit</button>
 	</form>
 {% endblock %}
