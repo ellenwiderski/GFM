@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-	<h1> Sign Up </h1>
+	<h3> Sign up to make your wishlist </h3>
 	<form action='' method='post' name='login' class='form-horizontal'>
 		{{ form.hidden_tag() }}
 		<div class="form-group">
@@ -39,12 +39,17 @@
 		</div>
 
 		{% for subfield in form.naughtynice %}
-		<tr>
-			<td>{{subfield}}</td>
-			<td{{subfield.label}}</td>
-		</tr>
+
+		<div class="radio-inline">
+			{{subfield}}
+			{{subfield.label}}
+		</div>
+		
 		{% endfor %}
 
-		<button type="submit" class='btn btn-default'>Submit</button>
+		<div class="form-group">
+			<button type="submit" class='btn btn-default'>Submit</button>
+			<a href="/login">Login</a>
+		</div>
 	</form>
 {% endblock %}
