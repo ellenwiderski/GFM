@@ -231,19 +231,19 @@ def signup():
 @app.route('/search/<keyword>', methods=['GET','POST'])
 def search(keyword):
 	search = Search()
-	curs.execute('''  SELECT * FROM list WHERE list_name LIKE '%{0}%' '''.format(keyword))
+	curs.execute('''  SELECT * FROM list WHERE list_name ~* '*{0}*' '''.format(keyword))
 	c = curs.fetchall()
 	lists = []
 	for l in c:
 		lists.append(l)
 
-	curs.execute(''' SELECT item.item_name,list.list_name,list.user_name FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) WHERE item_name LIKE '%{0}%' '''.format(keyword))
+	curs.execute(''' SELECT item.item_name,list.list_name,list.user_name FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) WHERE item_name ~* '*{0}*' '''.format(keyword))
 	c = curs.fetchall()
 	items = []
 	for i in c:
 		items.append(i)
 
-	curs.execute(''' SELECT users.user_name, users.display_name FROM users WHERE user_name LIKE '%{0}%' OR display_name LIKE '%{0}%' '''.format(keyword))
+	curs.execute(''' SELECT users.user_name, users.display_name FROM users WHERE user_name ~* '*{0}*' OR display_name ~* '*{0}*' '''.format(keyword))
 	c = curs.fetchall()
 	users = []
 	for u in c:
