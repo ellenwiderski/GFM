@@ -26,4 +26,4 @@ curs.execute('''CREATE TABLE list (
 curs.execute('''drop table IF EXISTS list_item CASCADE''')
 curs.execute('''CREATE TABLE list_item (item_name text references item(item_name), list_id int references list(list_id));''')
 
-conn.commit() #make this change permanent
+conn.commit()

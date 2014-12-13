@@ -1,6 +1,6 @@
 from flask import Flask, flash, request, make_response, render_template, redirect, flash, g
-from flask.ext.wtf import Form
 from flask.ext.login import LoginManager, login_user, UserMixin, logout_user, login_required, current_user, AnonymousUserMixin
+from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, IntegerField, BooleanField, RadioField, SelectField
 from wtforms.validators import InputRequired
 import psycopg2
