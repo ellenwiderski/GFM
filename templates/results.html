@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link href="/static/css/bootstrap2.min.css" rel="stylesheet" media="screen">
+{% endblock %}
+
+{% block content %}
+	<h2> Search Results: </h2>
+
+	{% if (lists|length + items|length + users|length) > 50 %}
+		<h4> Too many Results :( </h4>
+	{% else %}
+
+		{% if lists %}
+			<ul class="list-group">
+				<li class="list-group-item"><h4 class="list-group-item-heading">Lists:</h4></li>
+				{% for list in lists %}
+					<li class="list-group-item">
+						<a href='/user/{{list[2]}}'>{{list[1]}}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+
+		{% if items %}
+			<ul class="list-group">
+				<li class="list-group-item"><h4 class="list-group-item-heading">Items:</h4></li>
+				{% for item in items %}
+					<li class="list-group-item">
+						<a href='/user/{{item[2]}}'>{{item[0]}}</a>
+					</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+
+		{% if users %}
+		<ul class="list-group">
+				<li class="list-group-item"><h4 class="list-group-item-heading">Users:</h4></li>
+				{% for user in users %}
+					<li class="list-group-item">
+						<a href='/user/{{user[0]}}'>{{user[1]}} (Username: {{user[0]}})</a>
+					</li>
+				{% endfor %}
+		</ul>
+		{% endif %}
+
+		{% if not lists and not items and not users %}
+			<h4> No results :( </h4>
+		{% endif %}
+	{% endif %}
+{% endblock %}

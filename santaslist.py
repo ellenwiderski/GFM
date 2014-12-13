@@ -40,6 +40,7 @@ class User(UserMixin):
 class Anonymous(AnonymousUserMixin):
   def __init__(self):
     self.username = 'Guest'
+    self.display_name = "Guest"
 
 login_manager.anonymous_user = Anonymous
 
@@ -70,7 +71,10 @@ class NewItem(Form):
 	forList = SelectField('forList')
 
 class NewList(Form):
-	name = TextField('newlist',validators=[InputRequired()])			
+	name = TextField('newlist',validators=[InputRequired()])
+
+class Search(Form):
+	keyword = TextField('keyword',validators=[InputRequired()])
 
 @app.route('/deletelist/<list_id>',methods=['GET','POST'])
 def deletelist(list_id):
@@ -87,12 +91,12 @@ def deleteitem(list_id,item_name):
 	
 
 @app.route('/user/<username>', methods=['GET','POST'])
-@login_required
 def profile(username):
 	user = load_user(username)
 
 	newitem = NewItem()
 	newlist = NewList()
+	search = Search()
 
 	listdict = {}
 	choices = []
@@ -135,6 +139,9 @@ def profile(username):
 		conn.commit()
 		return redirect('/user/%s' % username)
 
+	if search.validate_on_submit():
+		return redirect('/search/%s'%search.keyword.data)
+
 	return render_template('profile.html',
 		listdict=listdict,
 		newitem=newitem,
@@ -142,7 +149,8 @@ def profile(username):
 		curruser=current_user.username,
 		profileuser=username,
 		curruserdisplay = current_user.display_name,
-		profileuserdisplay=user.display_name)
+		profileuserdisplay=user.display_name,
+		search=search)
 
 
 @app.route('/', methods=['GET','POST'])
@@ -154,6 +162,8 @@ def index():
 @app.route('/login', methods=['GET','POST'])
 def login():
 	form = LoginForm()
+	search = Search()
+
 	if form.validate_on_submit():
 		g.user = form.username.data
 		g.password = form.password.data
@@ -173,7 +183,10 @@ def login():
 		else:
 			return 'User does not exist'
 
-	return render_template('login.html',form=form,curruser=current_user)
+	if search.validate_on_submit():
+		return redirect('/search/%s'%search.keyword.data)
+
+	return render_template('login.html',form=form,curruser=current_user,search=search)
 
 @app.route('/logout', methods=['GET','POST'])
 def logout():
@@ -183,7 +196,7 @@ def logout():
 @app.route('/signup',methods=['GET','POST'])
 def signup():
 	form = SignupForm()
-
+	search = Search()
 	if form.validate_on_submit():
 		user = form.username.data
 		password = form.password.data
@@ -203,9 +216,35 @@ def signup():
 			login_user(newuser)
 			return redirect('/user/%s' % user)
 		else:
-			return render_template('signup.html',form=form,curruser=current_user)
+			return render_template('signup.html',form=form,curruser=current_user,search=search)
 
-	return render_template('signup.html',form=form,curruser=current_user)
+	if search.validate_on_submit():
+		return redirect('/search/%s'%search.keyword.data)
+
+	return render_template('signup.html',form=form,curruser=current_user,search=search)
+
+@app.route('/search/<keyword>', methods=['GET','POST'])
+def search(keyword):
+	search = Search()
+	c = curs.execute('''  SELECT * FROM list WHERE list_name LIKE '%{0}%' '''.format(keyword))
+	lists = []
+	for l in c:
+		lists.append(l)
+
+	c = curs.execute(''' SELECT item.item_name,list.list_name,list.user_name FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) WHERE item_name LIKE '%{0}%' '''.format(keyword))
+	items = []
+	for i in c:
+		items.append(i)
+
+	c = curs.execute(''' SELECT user.user_name, user.display_name FROM user WHERE user_name LIKE '%{0}%' OR display_name LIKE '%{0}%' '''.format(keyword))
+	users = []
+	for u in c:
+		users.append(u)
+
+	if search.validate_on_submit():
+		return redirect('/search/%s'%search.keyword.data)
+
+	return render_template("results.html",lists=lists,items=items,users=users,search=search,curruser=current_user)
 
 if __name__ == '__main__':
    	app.run()
