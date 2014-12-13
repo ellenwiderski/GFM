@@ -13,7 +13,7 @@ app.config.from_object('config')
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-conn = psycopg2.connect(database="d4gnik1781p8qs", user="ecxyptlvfvtqfi", password="Iyi4Mc9aJEax2o_5tyIx1SKAGk", host="ec2-54-243-44-191.compute-1.amazonaws.com", port=5432, psql="heroku pg:psql --app floating-hamlet-7464 HEROKU_POSTGRESQL_WHITE",url="postgres://ecxyptlvfvtqfi:Iyi4Mc9aJEax2o_5tyIx1SKAGk@ec2-54-243-44-191.compute-1.amazonaws.com:5432/d4gnik1781p8qs")
+conn = psycopg2.connect(database="d4gnik1781p8qs", user="ecxyptlvfvtqfi", password="Iyi4Mc9aJEax2o_5tyIx1SKAGk", host="ec2-54-243-44-191.compute-1.amazonaws.com", port=5432)
 curs = conn.cursor()
 
 class User(UserMixin):
