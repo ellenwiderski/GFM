@@ -1,6 +1,6 @@
 import psycopg2
 
-conn = psycopg2.connect(database="xmasapp")
+conn = psycopg2.connect("dbname=d4gnik1781p8qs host=ec2-54-243-44-191.compute-1.amazonaws.com port=5432 user=ecxyptlvfvtqfi password=Iyi4Mc9aJEax2o_5tyIx1SKAGk sslmode=require")
 
 curs = conn.cursor() 
 
@@ -11,26 +11,19 @@ curs.execute('''CREATE TABLE users (
 	display_name text, 
 	naughty boolean);''')
 
-curs.execute('''INSERT INTO users values ('MickeyMouse', 'passwordplease', 'Mickey', '1');''')
-
-
 curs.execute('''DROP TABLE IF EXISTS item CASCADE''')
 curs.execute('''CREATE TABLE item (
 	item_name text primary key, 
 	item_price int, 
 	item_link text);''')
 
-curs.execute('''INSERT INTO item values ('adventure pack', 50, 'www.patagonia.com');''')
-
 curs.execute('''drop table IF EXISTS list CASCADE''')
-curs.execute('''CREATE TABLE list (list_id serial primary key, list_name text, user_name text references users(user_name));''')
-
-curs.execute('''INSERT INTO list values (1,'Christmas List', 'MickeyMouse');''')
-
+curs.execute('''CREATE TABLE list (
+	list_id serial primary key, 
+	list_name text, 
+	user_name text references users(user_name));''')
 
 curs.execute('''drop table IF EXISTS list_item CASCADE''')
 curs.execute('''CREATE TABLE list_item (item_name text references item(item_name), list_id int references list(list_id));''')
-
-curs.execute('''INSERT INTO list_item values ('adventure pack', 1);''')
 
 conn.commit() #make this change permanent
