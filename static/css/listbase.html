@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Tangerine' rel='stylesheet' type='text/css'>
+    <link href="/static/style.css" rel="stylesheet">
+    <link href="/static/css/bootstrap2.min.css" rel="stylesheet" media="screen">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  </head>
+  <body>
+    {% block head %}
+    {% endblock %}
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <p class="text-center">Ellen Widerski, Cadence Sawyer &copy 2014</p>
+      </div>
+    </footer>
+  </body>
+</html>

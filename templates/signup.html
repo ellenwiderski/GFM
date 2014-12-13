@@ -2,7 +2,7 @@
 
 {% block head %}
 	<div class="jumbotron">
-        <h1 class="myTitle">We Wish You a Merry Christmas</h1>
+        <h1 class="myTitle">Are you Naughty or Nice?</h1>
     </div>
 {% endblock %}
 
@@ -10,31 +10,28 @@
 	<h3> Sign up to make your wishlist </h3>
 	<form action='' method='post' name='login' class='form-horizontal'>
 		{{ form.hidden_tag() }}
+
 		<div class="form-group">
-			<label for='username' class='col-sm-1 control-label'>Username:</label>
 			<div class='col-sm-3'>
-				{{ form.username(class='form-control',id='username') }}
+				{{ form.username(class='form-control',id='username', placeholder="Username") }}
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for='password' class='col-sm-1 control-label'>Password:</label>
 			<div class='col-sm-3'>
-				{{ form.password(id='password', type='password',class='form-control') }}
+				{{ form.display_name(class='form-control',id='displayname',  placeholder="First Name") }}
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for='retypepassword' class='col-sm-1 control-label'>Retype Password:</label>
 			<div class='col-sm-3'>
-				{{ form.retypepassword(id='retypepassword', type='password',class='form-control') }}
+					{{ form.password(id='password', type='password',class='form-control', placeholder="Password") }}
 			</div>
 		</div>
 
 		<div class="form-group">
-			<label for='displayname' class='col-sm-1 control-label'>Display Name:</label>
 			<div class='col-sm-3'>
-				{{ form.display_name(class='form-control',id='displayname') }}
+				{{ form.retypepassword(id='retypepassword', type='password',class='form-control', placeholder="Retype Password") }}
 			</div>
 		</div>
 

@@ -254,7 +254,7 @@ body {
   font-size: 14px;
   line-height: 1.428571429;
   color: #9a0904;
-  background-color: #f4ebd5;
+  background-color: #F5F3ED;
 }
 input,
 button,
@@ -298,7 +298,7 @@ img {
 .img-thumbnail {
   padding: 4px;
   line-height: 1.428571429;
-  background-color: #f4ebd5;
+  background-color: #F5F3ED;
   border: 1px solid #dddddd;
   border-radius: 4px;
   -webkit-transition: all 0.2s ease-in-out;
@@ -314,7 +314,7 @@ hr {
   margin-top: 20px;
   margin-bottom: 20px;
   border: 0;
-  border-top: 1px solid #e4d4ad;
+  border-top: 1px solid #E3DDCF;
 }
 .sr-only {
   position: absolute;
@@ -458,7 +458,7 @@ h4 small,
 .page-header {
   padding-bottom: 9px;
   margin: 40px 0 20px;
-  border-bottom: 1px solid #e4d4ad;
+  border-bottom: 1px solid #E3DDCF;
 }
 ul,
 ol {
@@ -547,7 +547,7 @@ abbr.initialism {
 blockquote {
   padding: 10px 20px;
   margin: 0 0 20px;
-  border-left: 5px solid #e4d4ad;
+  border-left: 5px solid #E3DDCF;
 }
 blockquote p {
   font-size: 17.5px;
@@ -568,7 +568,7 @@ blockquote small:before {
 blockquote.pull-right {
   padding-right: 15px;
   padding-left: 0;
-  border-right: 5px solid #e4d4ad;
+  border-right: 5px solid #E3DDCF;
   border-left: 0;
 }
 blockquote.pull-right p,
@@ -1308,7 +1308,7 @@ th {
   border-top: 2px solid #9a0904;
 }
 .table .table {
-  background-color: #f4ebd5;
+  background-color: #F5F3ED;
 }
 .table-condensed thead > tr > th,
 .table-condensed tbody > tr > th,
@@ -1571,7 +1571,7 @@ input[type="number"]::-webkit-inner-spin-button {
 .form-control[readonly],
 fieldset[disabled] .form-control {
   cursor: not-allowed;
-  background-color: #e4d4ad;
+  background-color: #E3DDCF;
 }
 textarea.form-control {
   height: auto;
@@ -3203,7 +3203,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
   font-weight: normal;
   line-height: 1;
   text-align: center;
-  background-color: #e4d4ad;
+  background-color: #E3DDCF;
   border: 1px solid #cccccc;
   border-radius: 4px;
 }
@@ -3298,7 +3298,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
 .nav > li > a:hover,
 .nav > li > a:focus {
   text-decoration: none;
-  background-color: #e4d4ad;
+  background-color: #E3DDCF;
 }
 .nav > li.disabled > a {
   color: #ccb691;
@@ -3313,7 +3313,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
 .nav .open > a,
 .nav .open > a:hover,
 .nav .open > a:focus {
-  background-color: #e4d4ad;
+  background-color: #E3DDCF;
   border-color: #b94b31;
 }
 .nav .nav-divider {
@@ -3339,13 +3339,13 @@ textarea.input-group-sm > .input-group-btn > .btn {
   border-radius: 4px 4px 0 0;
 }
 .nav-tabs > li > a:hover {
-  border-color: #e4d4ad #e4d4ad #dddddd;
+  border-color: #E3DDCF #E3DDCF #dddddd;
 }
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus {
   color: #cea363;
-  background-color: #f4ebd5;
+  background-color: #F5F3ED;
   border: 1px solid #dddddd;
   border-bottom-color: transparent;
   cursor: default;
@@ -3371,7 +3371,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
   margin-right: 0;
 }
 .nav-tabs.nav-justified > .active > a {
-  border-bottom-color: #f4ebd5;
+  border-bottom-color: #F5F3ED;
 }
 .nav-pills > li {
   float: left;
@@ -3418,7 +3418,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
   margin-right: 0;
 }
 .nav-tabs-justified > .active > a {
-  border-bottom-color: #f4ebd5;
+  border-bottom-color: #F5F3ED;
 }
 .tabbable:before,
 .tabbable:after {
@@ -4053,7 +4053,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
 .pagination > li > span:hover,
 .pagination > li > a:focus,
 .pagination > li > span:focus {
-  background-color: #e4d4ad;
+  background-color: #E3DDCF;
 }
 .pagination > .active > a,
 .pagination > .active > span,
@@ -4150,7 +4150,7 @@ textarea.input-group-sm > .input-group-btn > .btn {
 .pager li > a:hover,
 .pager li > a:focus {
   text-decoration: none;
-  background-color: #e4d4ad;
+  background-color: #E3DDCF;
 }
 .pager .next > a,
 .pager .next > span {
@@ -4273,7 +4273,7 @@ a.list-group-item.active > .badge,
   font-weight: 200;
   line-height: 2.1428571435;
   color: inherit;
-  background-color: #e4d4ad;
+  background-color: #E3DDCF;
   background-image: url('picture.jpg');
   min-height: 700px;
 }
@@ -4303,7 +4303,7 @@ a.list-group-item.active > .badge,
 .thumbnail {
   padding: 4px;
   line-height: 1.428571429;
-  background-color: #f4ebd5;
+  background-color: #F5F3ED;
   border: 1px solid #dddddd;
   border-radius: 4px;
   -webkit-transition: all 0.2s ease-in-out;
