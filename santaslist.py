@@ -13,7 +13,7 @@ app.config.from_object('config')
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-conn = psycopg2.connect("dbname=d4gnik1781p8qs host=ec2-54-243-44-191.compute-1.amazonaws.com port=5432 user=ecxyptlvfvtqfi password=Iyi4Mc9aJEax2o_5tyIx1SKAGk sslmode=require")
+conn = psycopg2.connect(database="d4gnik1781p8qs", user="ecxyptlvfvtqfi", password="Iyi4Mc9aJEax2o_5tyIx1SKAGk", host="ec2-54-243-44-191.compute-1.amazonaws.com", port=5432)
 curs = conn.cursor()
 
 class User(UserMixin):
