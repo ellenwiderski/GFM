@@ -18,7 +18,7 @@ curs.execute('''insert into item values ('adventure pack', 50, 'www.patagonia.co
 
 
 curs.execute('''drop table list''')
-curs.execute('''Create table list (list_id int primary key, list_name text, user_name text, foreign key(user_name) references user(user_name));''')
+curs.execute('''Create table list (list_id integer primary key autoincrement, list_name text, user_name text, foreign key(user_name) references user(user_name));''')
 
 curs.execute('''insert into list values (1,'Christmas List', 'MickeyMouse')''')
 

@@ -70,24 +70,32 @@ class NewItem(Form):
 	forList = SelectField('forList')
 
 class NewList(Form):
-	name = TextField('newlist',validators=[InputRequired()])
+	name = TextField('newlist',validators=[InputRequired()])			
 
+@app.route('/deletelist/<list_id>',methods=['GET','POST'])
+def deletelist(list_id):
+	curs.execute('''DELETE FROM list WHERE list.list_id = %s''' % list_id)
+	conn.commit()
+	return redirect('/')
+
+@app.route('/deleteitem/<list_id>/<item_name>',methods=['GET','POST'])
+def deleteitem(list_id,item_name):
+	curs.execute('''DELETE FROM list_item WHERE list_item.item_name = '%s' AND list_item.list_id = %s''' % (item_name,list_id))
+	conn.commit()
+	return redirect('/')
+
+	
 
 @app.route('/user/<username>', methods=['GET','POST'])
 @login_required
 def profile(username):
 	user = load_user(username)
 
-	delList = Form()
-	delItem = Form()
-
 	newitem = NewItem()
 	newlist = NewList()
 
 	listdict = {}
 	choices = []
-
-	listid = {}
 
 	lists = curs.execute('''SELECT list.list_id,list.list_name FROM user, list WHERE list.user_name = user.user_name and list.user_name='%s';'''%username)
 	mylists = []
@@ -101,24 +109,29 @@ def profile(username):
 		
 		listitems = []
 
+		list_id = mylist[0]
+		list_name = mylist[1]
+
 		for item in items:
 			listitems.append(item)
 
-		listdict[mylist[1]] = listitems
-		listid[mylist[1]] = mylist[0]
+		listdict[list_name] = (list_id,listitems)
 
 	newitem.forList.choices = choices
 
 	if newitem.validate_on_submit():
-		curs.execute('''INSERT into item values('%s',50,'amazon.com')''' % newitem.name.data)
-		curs.execute('''INSERT into list_item values('%s',%s) '''%(newitem.name.data,listid[newitem.forList.data]))
+		c = curs.execute('''SELECT item.item_name FROM item WHERE item.item_name='%s' '''%newitem.name.data)
+		alreadyexists = c.fetchone()
+		if not alreadyexists:
+			curs.execute('''INSERT into item values('%s',50,'amazon.com')''' % newitem.name.data)
+		list_name = newitem.forList.data
+		theID = listdict[list_name][0]
+		curs.execute('''INSERT into list_item values('%s',%s) '''%(newitem.name.data,theID))
 		conn.commit()
 		return redirect('/user/%s' % username)
 
 	if newlist.validate_on_submit() :
-		c = curs.execute('''SELECT list_id FROM list ORDER BY list_id DESC''')
-		highest = c.fetchone()[0]
-		curs.execute('''INSERT INTO list values(%s, '%s','%s')''' % (highest+1,newlist.name.data,username))
+		curs.execute('''INSERT INTO list values(NULL,'%s','%s')''' % (newlist.name.data,username))
 		conn.commit()
 		return redirect('/user/%s' % username)
 
@@ -129,9 +142,7 @@ def profile(username):
 		curruser=current_user.username,
 		profileuser=username,
 		curruserdisplay = current_user.display_name,
-		profileuserdisplay=user.display_name,
-		delList = delList,
-		delItem = delItem)
+		profileuserdisplay=user.display_name)
 
 
 @app.route('/', methods=['GET','POST'])
