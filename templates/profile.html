@@ -64,34 +64,32 @@
     <footer class="add">
       <div class="container">
 
-    	<form role="form" action='' method='post' name='newitem' class='form-inline'>
+    	<form role="form" action='' method='post' name='newitem' class='form-inline pull-left'>
 			{{ newlist.hidden_tag() }}
-
+			<label for='newlist' class='control-label'><h4>Add list:</h4></label>
 			<div class='form-group'>
 					{{ newlist.name(class='form-control',id='newlist',placeholder="New list name") }}
 			</div>
-			
+			<div class="form-group" >
 			<button type="submit" class='btn btn-default inline'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-
+			</div>
 		</form>
-	  </div>
-	  {% if listdict %}
-		  <div class="container">
-			<form role="form" action='' method='post' name='newitem' class='form-inline'>
+		{% if listdict %}
+			<form role="form" action='' method='post' name='newitem' class='form-inline pull-right'>
 				{{ newitem.hidden_tag() }}
+				<label for='newitem' class='control-label'><h4>Add item:</h4></label>
 				<div class="form-group" >
 					{{ newitem.name(class='form-control',id='newitem',placeholder="New item name") }}
 				</div>
-
 				<div class="form-group" >
 				    {{newitem.forList(class='form-control')}} 
 				</div>
-
+				<div class="form-group" >
 				<button type="submit" class='btn btn-default btn-sm'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-
+				</div>
 			</form>
 		  </div>
-	  {% endif %}
+	  	{% endif %}
     </footer>
 
 	{% endif %}
