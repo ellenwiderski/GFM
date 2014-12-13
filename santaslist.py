@@ -47,8 +47,11 @@ login_manager.anonymous_user = Anonymous
 def load_user(username):
     c = curs.execute('''SELECT user_name,password,display_name,naughty from user where user_name = '%s' ''' % username)
     userrow = c.fetchone()
-    user = User(userrow[0],userrow[1],userrow[2],userrow[3])
-    return user
+    if userrow:
+    	user = User(userrow[0],userrow[1],userrow[2],userrow[3])
+    	return user
+
+    return None
 
 class LoginForm(Form):
 	username = TextField('Username',validators=[InputRequired()])
@@ -75,11 +78,16 @@ class NewList(Form):
 def profile(username):
 	user = load_user(username)
 
+	delList = Form()
+	delItem = Form()
+
 	newitem = NewItem()
 	newlist = NewList()
 
 	listdict = {}
 	choices = []
+
+	listid = {}
 
 	lists = curs.execute('''SELECT list.list_id,list.list_name FROM user, list WHERE list.user_name = user.user_name and list.user_name='%s';'''%username)
 	mylists = []
@@ -89,8 +97,7 @@ def profile(username):
 
 	for mylist in mylists:
 		choices.append((mylist[1],mylist[1]))
-
-		items = curs.execute('''SELECT item.item_name, item.item_price, item.item_link from item, list, list_item WHERE list_item.list_id = list.list_id and list.list_id = '%s';'''%mylist[0])
+		items = curs.execute('''SELECT item.item_name,item.item_price,item.item_link FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) WHERE list.list_id=%s;'''%mylist[0])
 		
 		listitems = []
 
@@ -98,14 +105,13 @@ def profile(username):
 			listitems.append(item)
 
 		listdict[mylist[1]] = listitems
+		listid[mylist[1]] = mylist[0]
 
 	newitem.forList.choices = choices
 
 	if newitem.validate_on_submit():
-		c = curs.execute('''SELECT list_id FROM list ORDER BY list_id DESC''')
-		highest = c.fetchone()[0]
 		curs.execute('''INSERT into item values('%s',50,'amazon.com')''' % newitem.name.data)
-		curs.execute('''INSERT into list_item values('%s',%s) '''%(newitem.name.data,highest+1))
+		curs.execute('''INSERT into list_item values('%s',%s) '''%(newitem.name.data,listid[newitem.forList.data]))
 		conn.commit()
 		return redirect('/user/%s' % username)
 
@@ -123,7 +129,9 @@ def profile(username):
 		curruser=current_user.username,
 		profileuser=username,
 		curruserdisplay = current_user.display_name,
-		profileuserdisplay=user.display_name)
+		profileuserdisplay=user.display_name,
+		delList = delList,
+		delItem = delItem)
 
 
 @app.route('/', methods=['GET','POST'])
@@ -181,6 +189,7 @@ def signup():
 		if not userexists:
 			newuser = User(user,password,display_name,naughty)
 			newuser.add()
+			login_user(newuser)
 			return redirect('/user/%s' % user)
 		else:
 			return render_template('signup.html',form=form,curruser=current_user)
