@@ -14,7 +14,6 @@ curs.execute('''CREATE TABLE users (
 curs.execute('''DROP TABLE IF EXISTS item CASCADE''')
 curs.execute('''CREATE TABLE item (
 	item_name text primary key, 
-	item_price int, 
 	item_link text);''')
 
 curs.execute('''drop table IF EXISTS list CASCADE''')

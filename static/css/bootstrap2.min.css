@@ -23,6 +23,11 @@ body {
   padding:10px;
 }
 
+.container .add {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 footer.add {
   position: absolute;
   left:0px;

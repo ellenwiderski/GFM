@@ -2,7 +2,8 @@ from flask import Flask, flash, request, make_response, render_template, redirec
 from flask.ext.login import LoginManager, login_user, UserMixin, logout_user, login_required, current_user, AnonymousUserMixin
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, IntegerField, BooleanField, RadioField, SelectField
-from wtforms.validators import InputRequired
+from wtforms.fields.html5 import URLField
+from wtforms.validators import InputRequired, url
 import psycopg2
 
 
@@ -35,7 +36,8 @@ class User(UserMixin):
         return '<User %s>' % (self.username)
 
     def add(self):
-        curs.execute('''INSERT INTO users values('%s','%s','%s','%s');'''%(self.username,self.password,self.display_name,self.naughty))
+        curs.execute('''INSERT INTO users 
+        	values('%s','%s','%s','%s');'''%(self.username,self.password,self.display_name,self.naughty))
         conn.commit()
 
 class Anonymous(AnonymousUserMixin):
@@ -47,13 +49,17 @@ login_manager.anonymous_user = Anonymous
 
 @login_manager.user_loader
 def load_user(username):
-    curs.execute('''SELECT user_name,password,display_name,naughty from users where user_name = '%s' ''' % username)
+    curs.execute('''SELECT user_name,password,display_name,naughty 
+    	from users 
+    	where user_name = '%s' ''' % username)
     userrow = curs.fetchone()
     if userrow is not None:
     	user = User(userrow[0],userrow[1],userrow[2],userrow[3])
-    	return user
+    
+    else:
+    	user = Anonymous()
 
-    return None
+    return user
 
 class LoginForm(Form):
 	username = TextField('Username',validators=[InputRequired()])
@@ -70,6 +76,7 @@ class SignupForm(Form):
 class NewItem(Form):
 	name = TextField('additem',validators=[InputRequired()])
 	forList = SelectField('forList')
+	website = URLField('website')
 
 class NewList(Form):
 	name = TextField('newlist',validators=[InputRequired()])
@@ -86,7 +93,10 @@ def deletelist(list_id):
 
 @app.route('/deleteitem/<list_id>/<item_name>',methods=['GET','POST'])
 def deleteitem(list_id,item_name):
-	curs.execute('''DELETE FROM list_item WHERE list_item.item_name = '%s' AND list_item.list_id = %s''' % (item_name,list_id))
+	curs.execute('''DELETE FROM list_item 
+		WHERE list_item.item_name = '%s' 
+		AND list_item.list_id = %s''' % (item_name,list_id))
+
 	conn.commit()
 	return redirect('/')
 
@@ -103,7 +113,11 @@ def profile(username):
 	listdict = {}
 	choices = []
 
-	curs.execute('''SELECT list.list_id,list.list_name FROM users, list WHERE list.user_name = users.user_name and list.user_name='%s';'''%username)
+	curs.execute('''SELECT list.list_id,list.list_name 
+		FROM users, list 
+		WHERE list.user_name = users.user_name 
+		and list.user_name='%s';'''%username)
+
 	lists = curs.fetchall()
 	mylists = []
 
@@ -112,7 +126,10 @@ def profile(username):
 
 	for mylist in mylists:
 		choices.append((mylist[1],mylist[1]))
-		curs.execute('''SELECT item.item_name,item.item_price,item.item_link FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) WHERE list.list_id=%s;'''%mylist[0])
+		curs.execute('''SELECT item.item_name,item.item_price,item.item_link 
+			FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) 
+			WHERE list.list_id=%s;'''%mylist[0])
+
 		items = curs.fetchall()
 
 		listitems = []
@@ -128,19 +145,27 @@ def profile(username):
 	newitem.forList.choices = choices
 
 	if newitem.validate_on_submit():
-		curs.execute('''SELECT item.item_name FROM item WHERE item.item_name='%s' '''%newitem.name.data)
+		curs.execute('''SELECT item.item_name 
+			FROM item 
+			WHERE item.item_name='%s' '''%newitem.name.data)
+
 		c = curs.fetchone()
 		if c is None:
-			curs.execute('''INSERT into item values('%s',50,'amazon.com')''' % newitem.name.data)
+			curs.execute('''INSERT into item 
+				values('%s',%s,'%s')''' % (newitem.name.data,newitem.website.data))
 		
 		list_name = newitem.forList.data
-		theID = listdict[list_name][0]
-		curs.execute('''INSERT into list_item values('%s',%s) '''%(newitem.name.data,theID))
+		listID = listdict[list_name][0]
+		curs.execute('''INSERT into list_item 
+			values('%s',%s) '''%(newitem.name.data,listID))
+
 		conn.commit()
 		return redirect('/user/%s' % username)
 
 	if newlist.validate_on_submit() :
-		curs.execute('''INSERT INTO list (list_name,user_name) values('%s','%s')''' % (newlist.name.data,username))
+		curs.execute('''INSERT INTO list (list_name,user_name) 
+			values('%s','%s')''' % (newlist.name.data,username))
+
 		conn.commit()
 		return redirect('/user/%s' % username)
 
@@ -173,10 +198,16 @@ def login():
 		g.user = form.username.data
 		g.password = form.password.data
 
-		curs.execute('''SELECT user_name FROM users WHERE user_name = '%s';''' % g.user)
+		curs.execute('''SELECT user_name 
+			FROM users 
+			WHERE user_name = '%s';''' % g.user)
+
 		c = curs.fetchone()
 		if c is not None:
-			curs.execute('''SELECT password FROM users WHERE password = '%s';''' % g.password)
+			curs.execute('''SELECT password 
+				FROM users 
+				WHERE password = '%s';''' % g.password)
+
 			correct = curs.fetchone()
 			if correct:
 				user = load_user(g.user)
@@ -191,7 +222,10 @@ def login():
 	if search.validate_on_submit():
 		return redirect('/search/%s'%search.keyword.data)
 
-	return render_template('login.html',form=form,curruser=current_user,search=search)
+	return render_template('login.html',
+		form=form,
+		curruser=current_user,
+		search=search)
 
 @app.route('/logout', methods=['GET','POST'])
 def logout():
@@ -212,47 +246,70 @@ def signup():
 		else:
 			naughty = 0
 
-		curs.execute('''SELECT user_name FROM users WHERE user_name = '%s';'''% user)
+		curs.execute('''SELECT user_name 
+			FROM users 
+			WHERE user_name = '%s';'''% user)
+
 		c = curs.fetchone()
-		print(c)
 		if c is None:
 			newuser = User(user,password,display_name,naughty)
 			newuser.add()
 			login_user(newuser)
 			return redirect('/user/%s' % user)
 		else:
-			return render_template('signup.html',form=form,curruser=current_user,search=search)
+			return render_template('signup.html',
+				form=form,
+				curruser=current_user,
+				search=search)
 
 	if search.validate_on_submit():
 		return redirect('/search/%s'%search.keyword.data)
 
-	return render_template('signup.html',form=form,curruser=current_user,search=search)
+	return render_template('signup.html',
+		form=form,
+		curruser=current_user,
+		search=search)
 
 @app.route('/search/<keyword>', methods=['GET','POST'])
 def search(keyword):
 	search = Search()
-	curs.execute('''  SELECT * FROM list WHERE list_name ILIKE '%{0}%' '''.format(keyword))
+	curs.execute(''' SELECT * 
+		FROM list 
+		WHERE list_name ILIKE '%{0}%' '''.format(keyword))
+
 	c = curs.fetchall()
 	lists = []
 	for l in c:
 		lists.append(l)
 
-	curs.execute(''' SELECT item.item_name,list.list_name,list.user_name FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) WHERE item_name ILIKE '%{0}%' '''.format(keyword))
+	curs.execute(''' SELECT item.item_name,list.list_name,list.user_name 
+		FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) 
+		WHERE item_name ILIKE '%{0}%' '''.format(keyword))
+
 	c = curs.fetchall()
 	items = []
 	for i in c:
 		items.append(i)
 
-	curs.execute(''' SELECT users.user_name, users.display_name FROM users WHERE user_name ILIKE '%{0}%' OR display_name ILIKE '%{0}%'; '''.format(keyword))
+	curs.execute(''' SELECT users.user_name, users.display_name 
+		FROM users 
+		WHERE user_name ILIKE '%{0}%' 
+		OR display_name ILIKE '%{0}%'; '''.format(keyword))
+
 	c = curs.fetchall()
 	users = []
 	for u in c:
 		users.append(u)
 
 	if search.validate_on_submit():
-		return redirect('/search/%s'%search.keyword.data)
+		return redirect('/search/%s' % search.keyword.data)
 
-	return render_template("results.html",lists=lists,items=items,users=users,search=search,curruser=current_user)
+	return render_template("results.html",
+		lists=lists,
+		items=items,
+		users=users,
+		search=search,
+		curruser=current_user)
 
 if __name__ == '__main__':
    	app.run()

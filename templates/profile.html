@@ -6,7 +6,7 @@
 
 {% block content %}
 
-
+	
 	{% if curruser == profileuser %}
 		{% if listdict %}
 			<h3>Here are your lists, {{ curruserdisplay }} </h3>
@@ -15,11 +15,15 @@
 			<h4>Why not make one?</h4>
 		{% endif %}
 	{% else %}
-		{% if listdict %}
-			<h3>Here are {{ profileuserdisplay }}'s lists </h3>
-		{% else %}
-			<h3>{{profileuserdisplay}} has no lists :(</h3>
-		{% endif %}
+		{% if profileuserdisplay != 'Guest' %}
+			{% if listdict %}
+				<h3>Here are {{ profileuserdisplay }}'s lists </h3>
+			{% else %}
+				<h3>{{profileuserdisplay}} has no lists :(</h3>
+			{% endif %}
+			{% else %}
+				<h3> Oops! User not found </h3>
+			{% endif %}
 	{% endif %}
 
 	{% for list in listdict %}
@@ -38,15 +42,23 @@
 			
 			{% if listdict[list][1] %}
 				{% for item in listdict[list][1] %}
-					<li class="list-group-item">{{ item[0] }}
-					{% if curruser == profileuser %}
-					<span class="btn-group pull-right">
-					<form role="form" action="/deleteitem/{{listdict[list][0]}}/{{item[0]}}" method='post' name='delItem'>
-						<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">
-						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-						</button>
-					</form>
-					</span>
+					<li class="list-group-item">
+						{% if item[2] %}
+						<a href="{{item[2]}}">
+							{{ item[0] }}
+						</a>
+						{% else %}
+							{{ item[0] }}
+						{% endif %}
+
+						{% if curruser == profileuser %}
+						<span class="btn-group pull-right">
+							<form role="form" action="/deleteitem/{{listdict[list][0]}}/{{item[0]}}" method='post' name='delItem'>
+								<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">
+						 			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+								</button>
+							</form>
+						</span>
 					{% endif %}
 					</li>
 
@@ -61,8 +73,8 @@
 
 	{% if curruser == profileuser %}
 
-    <footer class="add">
-      <div class="container">
+    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+      <div class="container add">
 
     	<form role="form" action='' method='post' name='newitem' class='form-inline pull-left'>
 			{{ newlist.hidden_tag() }}
@@ -80,6 +92,9 @@
 				<label for='newitem' class='control-label'><h4>Add item:</h4></label>
 				<div class="form-group" >
 					{{ newitem.name(class='form-control',id='newitem',placeholder="New item name") }}
+				</div>
+				<div class="form-group" >
+					{{ newitem.website(class='form-control',id='website',placeholder="Website") }}
 				</div>
 				<div class="form-group" >
 				    {{newitem.forList(class='form-control')}} 
