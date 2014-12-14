@@ -3,7 +3,7 @@ from flask.ext.login import LoginManager, login_user, UserMixin, logout_user, lo
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, IntegerField, BooleanField, RadioField, SelectField
 from wtforms.fields.html5 import URLField
-from wtforms.validators import InputRequired, url
+from wtforms.validators import InputRequired, url, Optional
 import psycopg2
 
 
@@ -77,6 +77,7 @@ class NewItem(Form):
 	name = TextField('additem',validators=[InputRequired()])
 	forList = SelectField('forList')
 	website = URLField('website')
+	price = TextField('price')
 
 class NewList(Form):
 	name = TextField('newlist',validators=[InputRequired()])
@@ -91,11 +92,11 @@ def deletelist(list_id):
 	conn.commit()
 	return redirect('/')
 
-@app.route('/deleteitem/<list_id>/<item_name>',methods=['GET','POST'])
-def deleteitem(list_id,item_name):
+@app.route('/deleteitem/<list_id>/<item_id>',methods=['GET','POST'])
+def deleteitem(list_id,item_id):
 	curs.execute('''DELETE FROM list_item 
-		WHERE list_item.item_name = '%s' 
-		AND list_item.list_id = %s''' % (item_name,list_id))
+		WHERE list_item.item_id = %s 
+		AND list_item.list_id = %s''' % (item_id,list_id))
 
 	conn.commit()
 	return redirect('/')
@@ -126,8 +127,8 @@ def profile(username):
 
 	for mylist in mylists:
 		choices.append((mylist[1],mylist[1]))
-		curs.execute('''SELECT item.item_name,item.item_link 
-			FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) 
+		curs.execute('''SELECT item.item_name,item.item_link, item.item_id, item.item_price
+			FROM item JOIN list_item USING(item_id) JOIN list USING(list_id) 
 			WHERE list.list_id=%s;'''%mylist[0])
 
 		items = curs.fetchall()
@@ -146,19 +147,29 @@ def profile(username):
 
 	if newitem.validate_on_submit():
 
-		curs.execute('''SELECT item.item_name 
+		curs.execute('''SELECT item.item_name, item.item_price, item.item_link 
 			FROM item 
-			WHERE item.item_name='%s' '''%newitem.name.data)
+			WHERE item.item_name='%s' AND item.item_price='%s' AND item.item_link='%s' '''%(newitem.name.data,newitem.price.data,newitem.website.data))
 
 		c = curs.fetchone()
 		if c is None:
-			curs.execute('''INSERT into item 
-				values('%s','%s')''' % (newitem.name.data,newitem.website.data))
+			curs.execute('''INSERT into 
+				item (item_name,item_price,item_link)
+				values('%s','%s','%s')''' % (newitem.name.data,newitem.price.data,newitem.website.data))
 		
+		curs.execute('''SELECT item.item_id 
+			FROM item 
+			WHERE item.item_name='%s' 
+			AND item.item_price='%s' 
+			AND item.item_link='%s' '''%(newitem.name.data,newitem.price.data,newitem.website.data))
+
+		c = curs.fetchone()
+		itemID = c[0]
+
 		list_name = newitem.forList.data
 		listID = listdict[list_name][0]
 		curs.execute('''INSERT into list_item 
-			values('%s',%s) '''%(newitem.name.data,listID))
+			values(%s,%s) '''%(itemID,listID))
 
 		conn.commit()
 		return redirect('/user/%s' % username)

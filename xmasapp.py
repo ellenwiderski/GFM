@@ -13,7 +13,9 @@ curs.execute('''CREATE TABLE users (
 
 curs.execute('''DROP TABLE IF EXISTS item CASCADE''')
 curs.execute('''CREATE TABLE item (
-	item_name text primary key, 
+	item_id serial primary key,
+	item_name text,
+	item_price text, 
 	item_link text);''')
 
 curs.execute('''drop table IF EXISTS list CASCADE''')
@@ -23,6 +25,6 @@ curs.execute('''CREATE TABLE list (
 	user_name text references users(user_name));''')
 
 curs.execute('''drop table IF EXISTS list_item CASCADE''')
-curs.execute('''CREATE TABLE list_item (item_name text references item(item_name), list_id int references list(list_id));''')
+curs.execute('''CREATE TABLE list_item (item_id serial references item(item_id), list_id serial references list(list_id));''')
 
 conn.commit()

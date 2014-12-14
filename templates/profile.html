@@ -45,17 +45,21 @@
 				{% for item in listdict[list][1] %}
 					<li class="list-group-item">
 
-						{% if item[2] %}
-							<a href="{{item[2]}}">
+						{% if item[1] %}
+							<a href="http://www.{{item[1]}}">
 								{{ item[0] }}
 							</a>
 						{% else %}
 							{{ item[0] }}
 						{% endif %}
 
+						{% if item[2] %}
+							| Price: {{item[2]}}
+						{% endif %}
+
 						{% if curruser == profileuser %}
 						<span class="btn-group pull-right">
-							<form role="form" action="/deleteitem/{{listdict[list][0]}}/{{item[0]}}" method='post' name='delItem'>
+							<form role="form" action="/deleteitem/{{listdict[list][0]}}/{{item[2]}}" method='post' name='delItem'>
 								<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">
 						 			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 								</button>
@@ -80,7 +84,7 @@
 
     	<form role="form" action='' method='post' name='newitem' class='form-inline pull-left'>
 			{{ newlist.hidden_tag() }}
-			<label for='newlist' class='control-label'><h4>Add list:</h4></label>
+			<label for='newlist' class='control-label'><h5>Add list:</h5></label>
 			<div class='form-group'>
 					{{ newlist.name(class='form-control',id='newlist',placeholder="New list name") }}
 			</div>
@@ -91,12 +95,16 @@
 		{% if listdict %}
 			<form role="form" action='' method='post' name='newitem' class='form-inline pull-right'>
 				{{ newitem.hidden_tag() }}
-				<label for='newitem' class='control-label'><h4>Add item:</h4></label>
+				<label for='newitem' class='control-label'><h5>Add item:</h5></label>
 				<div class="form-group" >
 					{{ newitem.name(class='form-control',id='newitem',placeholder="New item name") }}
 				</div>
 				<div class="form-group" >
-					{{ newitem.website(class='form-control',id='website',placeholder="Website") }}
+					{{ newitem.price(class='form-control',id='price',placeholder="Price") }}
+				</div>
+				<label for='newitem' class='control-label'><h5>http://www.</h5></label>
+				<div class="form-group" >
+					{{ newitem.website(class='form-control',id='website',placeholder="example.com") }}
 				</div>
 				<div class="form-group" >
 				    {{newitem.forList(class='form-control')}} 
