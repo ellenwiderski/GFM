@@ -126,7 +126,7 @@ def profile(username):
 
 	for mylist in mylists:
 		choices.append((mylist[1],mylist[1]))
-		curs.execute('''SELECT item.item_name,item.item_price,item.item_link 
+		curs.execute('''SELECT item.item_name,item.item_link 
 			FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) 
 			WHERE list.list_id=%s;'''%mylist[0])
 
@@ -145,6 +145,7 @@ def profile(username):
 	newitem.forList.choices = choices
 
 	if newitem.validate_on_submit():
+
 		curs.execute('''SELECT item.item_name 
 			FROM item 
 			WHERE item.item_name='%s' '''%newitem.name.data)
@@ -152,7 +153,7 @@ def profile(username):
 		c = curs.fetchone()
 		if c is None:
 			curs.execute('''INSERT into item 
-				values('%s',%s,'%s')''' % (newitem.name.data,newitem.website.data))
+				values('%s','%s')''' % (newitem.name.data,newitem.website.data))
 		
 		list_name = newitem.forList.data
 		listID = listdict[list_name][0]
