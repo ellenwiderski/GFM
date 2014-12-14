@@ -34,7 +34,7 @@
               {% if current_user.username != 'Guest' %}
                 <ul class="nav navbar-nav navbar-left">
                   <li>
-                    <a href="mailto:%20?subject=Check out my wishlist!&body=Hi, friend! %0D%0A %0D%0A You can look at my wishlists and sign up to make your own at http://floating-hamlet-7464.herokuapp.com/user/{{current_user.username}}. %0D%0A %0D%0A Yours truly, %0D%0A {{current_user.display_name}}"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></a>
+                    <a href="mailto:%20?subject=Check out my wishlist!&body=Hi, friend! %0D %0D You can look at my wishlists and sign up to make your own at http://floating-hamlet-7464.herokuapp.com/user/{{current_user.username}}. %0D %0D Yours truly, %0D {{current_user.display_name}}"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></a>
                   </li>
                 </ul>
               {% endif %}
