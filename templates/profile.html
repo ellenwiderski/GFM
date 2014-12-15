@@ -46,14 +46,12 @@
 					<li class="list-group-item">
 
 						{% if item[1] %}
-							<a href="http://www.{{item[1]}}">
-								{{ item[0] }}
-							</a>
+							<a href="http://www.{{item[1]}}">{{ item[0] }}</a>
 						{% else %}
 							{{ item[0] }}
 						{% endif %}
 
-						{% if item[2] %}
+						{% if item[3] %}
 							| Price: {{item[3]}}
 						{% endif %}
 

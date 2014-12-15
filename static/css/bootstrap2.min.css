@@ -26,6 +26,8 @@ body {
 .container .add {
   padding-left: 0;
   padding-right: 0;
+  margin-left:30px;
+  margin-right:20px;
 }
 
 footer.add {
