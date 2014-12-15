@@ -39,6 +39,9 @@ footer.add {
   padding-top:10px;
   background-color:#9DBF7E;
 }
+select {
+  max-width: 100px;
+}
 
 h4 .btn-group {
   display:inline-block;

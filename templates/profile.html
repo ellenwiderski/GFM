@@ -38,6 +38,14 @@
 				</button>
 				</form>
 			</span>
+			{% else %}
+			<span class="btn-group pull-right">
+				<form role="form" action="/copy/{{listdict[list][0]}}" method='post'>
+					<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">Copy
+			  		<span class="fa fa-files-o" aria-hidden="true"></span>
+				</button>
+				</form>
+			</span>
 			{% endif %}
 			</li>
 			

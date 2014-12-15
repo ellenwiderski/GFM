@@ -85,6 +85,23 @@ class NewList(Form):
 class Search(Form):
 	keyword = TextField('keyword',validators=[InputRequired()])
 
+
+@app.route('/copy/<list_id>',methods=['GET','POST'])
+def copy(list_id):
+	curs.execute('''SELECT list_name FROM list WHERE list_id=%s'''%list_id)
+	listname = curs.fetchone()[0]
+
+	curs.execute(''' INSERT INTO list (list_name,user_name) values('%s','%s') RETURNING list_id'''%(listname,current_user.username))
+	listid = curs.fetchone()[0]
+
+	curs.execute(''' SELECT * FROM list JOIN list_item USING(list_id) JOIN item USING(item_id) WHERE list_id=%s'''%list_id)
+	c = curs.fetchall()
+	
+	for item in c:
+		curs.execute(''' INSERT INTO list_item values(%s,%s)'''%(item[0],listid))
+
+	return redirect('/')
+
 @app.route('/deletelist/<list_id>',methods=['GET','POST'])
 def deletelist(list_id):
 	curs.execute('''DELETE FROM list_item WHERE list_item.list_id = '%s' ''' % list_id)
@@ -155,16 +172,9 @@ def profile(username):
 		if c is None:
 			curs.execute('''INSERT into 
 				item (item_name,item_price,item_link)
-				values('%s','%s','%s')''' % (newitem.name.data,newitem.price.data,newitem.website.data))
+				values('%s','%s','%s') RETURNING item_id''' % (newitem.name.data,newitem.price.data,newitem.website.data))
 		
-		curs.execute('''SELECT item.item_id 
-			FROM item 
-			WHERE item.item_name='%s' 
-			AND item.item_price='%s' 
-			AND item.item_link='%s' '''%(newitem.name.data,newitem.price.data,newitem.website.data))
-
-		c = curs.fetchone()
-		itemID = c[0]
+			itemID = curs.fetchone()[0]
 
 		list_name = newitem.forList.data
 		listID = listdict[list_name][0]
