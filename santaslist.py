@@ -168,6 +168,7 @@ def profile(username):
 
 		list_name = newitem.forList.data
 		listID = listdict[list_name][0]
+		
 		curs.execute('''INSERT into list_item 
 			values(%s,%s) '''%(itemID,listID))
 
