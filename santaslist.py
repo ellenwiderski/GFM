@@ -295,7 +295,7 @@ def search(keyword):
 		lists.append(l)
 
 	curs.execute(''' SELECT item.item_name,list.list_name,list.user_name 
-		FROM item JOIN list_item USING(item_name) JOIN list USING(list_id) 
+		FROM item JOIN list_item USING(item_id) JOIN list USING(list_id) 
 		WHERE item_name ILIKE '%{0}%' '''.format(keyword))
 
 	c = curs.fetchall()
