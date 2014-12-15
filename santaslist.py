@@ -76,7 +76,7 @@ class SignupForm(Form):
 class NewItem(Form):
 	name = TextField('additem',validators=[InputRequired()])
 	forList = SelectField('forList')
-	website = URLField('website')
+	website = TextField('website')
 	price = TextField('price')
 
 class NewList(Form):
