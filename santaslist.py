@@ -195,12 +195,14 @@ def profile(username):
 	if search.validate_on_submit():
 		return redirect('/search/%s'%search.keyword.data)
 
+	profileuser=load_user(username)
+
 	return render_template('profile.html',
 		listdict=listdict,
 		newitem=newitem,
 		newlist=newlist,
 		curruser=current_user.username,
-		profileuser=username,
+		profileuser=profileuser,
 		curruserdisplay = current_user.display_name,
 		profileuserdisplay=user.display_name,
 		search=search)
@@ -268,41 +270,56 @@ def logout():
 def signup():
 	form = SignupForm()
 	search = Search()
-	if form.validate_on_submit():
-		user = form.username.data
-		password = form.password.data
-		display_name = form.display_name.data
-
-		if form.naughtynice.data == 'naughty':
-			naughty = 1
-		else:
-			naughty = 0
-
-		curs.execute('''SELECT user_name 
-			FROM users 
-			WHERE user_name = $$%s$$;'''% user)
-
-		c = curs.fetchone()
-		if c is None:
-			newuser = User(user,password,display_name,naughty)
-			newuser.add()
-			login_user(newuser)
-			return redirect('/user/%s' % user)
-		else:
-			return render_template('signup.html',
-				form=form,
-				curruser=current_user,
-				search=search,
-				validuser=False)
 
 	if search.validate_on_submit():
 		return redirect('/search/%s'%search.keyword.data)
 
+	if form.validate_on_submit():
+		user = form.username.data
+		password = form.password.data
+		retype = form.retypepassword.data
+		display_name = form.display_name.data
+
+		if password == retype:
+
+			if form.naughtynice.data == 'naughty':
+				naughty = 1
+			else:
+				naughty = 0
+
+			curs.execute('''SELECT user_name 
+				FROM users 
+				WHERE user_name = $$%s$$;'''% user)
+
+			c = curs.fetchone()
+			if c is None:
+				newuser = User(user,password,display_name,naughty)
+				newuser.add()
+				login_user(newuser)
+				return redirect('/user/%s' % user)
+			else:
+				return render_template('signup.html',
+					form=form,
+					curruser=current_user,
+					search=search,
+					validuser=False,
+					passmatch=True)
+
+		else:
+			return render_template('signup.html',
+						form=form,
+						curruser=current_user,
+						search=search,
+						validuser=True,
+						passmatch=False)
+
 	return render_template('signup.html',
-		form=form,
-		curruser=current_user,
-		search=search,
-		validuser=True)
+			form=form,
+			curruser=current_user,
+			search=search,
+			validuser=True,
+			passmatch=True)
+
 
 @app.route('/search/<keyword>', methods=['GET','POST'])
 def search(keyword):

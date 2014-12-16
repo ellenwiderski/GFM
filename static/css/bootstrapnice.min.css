@@ -8,6 +8,7 @@ html {
 body {
   margin-bottom: 60px;
   padding-bottom:60px;
+
 }
 .footer {
   position: absolute;
@@ -5962,4 +5963,9 @@ td.visible-print {
   td.hidden-print {
     display: none !important;
   }
+}
+
+h3,h4 {
+    font-family: 'Petit Formal Script', cursive;
+
 }

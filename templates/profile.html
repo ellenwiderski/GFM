@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 
 {% block head %}
-<link href="/static/css/bootstrap2.min.css" rel="stylesheet" media="screen">
+{% if profileuser.naughty %}
+<link href="/static/css/bootstrapnaughty.min.css" rel="stylesheet" media="screen">
+{% else %}
+<link href="/static/css/bootstrapnice.min.css" rel="stylesheet" media="screen">
+{% endif %}
 {% endblock %}
 
 {% block content %}
 
 	
-	{% if curruser == profileuser %}
+	{% if curruser == profileuser.username %}
 		{% if listdict %}
 			<h3>Here are your lists, {{ curruserdisplay }} </h3>
 		{% else %}
@@ -30,7 +34,7 @@
 		<ul class="list-group">
 			<li class="list-group-item">
 				<h4 class="list-group-item-heading">{{ list }}</h4>
-			{% if curruser == profileuser %}
+			{% if curruser == profileuser.username %}
 			<span class="btn-group pull-right">
 				<form role="form" action="/deletelist/{{listdict[list][0]}}" method='post'>
 					<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">Delete <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
@@ -62,7 +66,7 @@
 							| Price: {{item[3]}}
 						{% endif %}
 
-						{% if curruser == profileuser %}
+						{% if curruser == profileuser.username %}
 						<span class="btn-group pull-right">
 							<form role="form" action="/deleteitem/{{listdict[list][0]}}/{{item[2]}}" method='post' name='delItem'>
 								<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">
@@ -82,7 +86,7 @@
 	{% endfor %}
 
 
-	{% if curruser == profileuser %}
+	{% if curruser == profileuser.username %}
 
     <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
       <div class="container add">
