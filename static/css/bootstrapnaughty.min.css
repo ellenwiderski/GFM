@@ -3775,8 +3775,17 @@ textarea.input-group-sm > .input-group-btn > .btn {
     float: left !important;
   }
   .navbar-right {
+    float: right !important;
+  }
+  .navbar-right .foot {
+    float: left !important;
   }
 }
+
+.foot {
+  float: none !important;
+}
+
 .navbar-form {
   margin-left: -15px;
   margin-right: -15px;
