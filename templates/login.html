@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block head %}
+<link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+{% endblock %}
 {% block header %}
 	<div class="jumbotron">
 		<img src="{{ url_for('static', filename='christmas.jpg') }}" class="img-responsive">

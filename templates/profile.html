@@ -89,20 +89,33 @@
 	{% if curruser == profileuser.username %}
 
     <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-      <div class="container add">
+      <div class="container-fluid">
 
-    	<form role="form" action='' method='post' name='newlist' class='form-inline pull-left'>
-			{{ newlist.hidden_tag() }}
-			<label for='newlist' class='control-label'><h5>Add list:</h5></label>
-			<div class='form-group'>
-					{{ newlist.name(class='form-control',id='newlist',placeholder="New list name") }}
-			</div>
-			<div class="form-group" >
-			<button type="submit" class='btn btn-default inline'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-			</div>
-		</form>
-		{% if listdict %}
-			<form role="form" action='' method='post' name='newitem' class='form-inline pull-right'>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#foot">
+          	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-gift" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="foot">
+          <ul class="nav navbar-nav navbar-right">
+          	<li>
+			  <form role="form" action='' method='post' name='newlist' class='form-inline pull-left'>
+				{{ newlist.hidden_tag() }}
+				<label for='newlist' class='control-label'><h5>Add list:</h5></label>
+				<div class='form-group'>
+						{{ newlist.name(class='form-control',id='newlist',placeholder="New list name") }}
+				</div>
+				<div class="form-group" >
+				<button type="submit" class='btn btn-default inline'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+				</div>
+			  </form>
+          	</li>
+            <li>
+
+            	{% if listdict %}
+				<form role="form" action='' method='post' name='newitem' class='form-inline pull-right'>
 				{{ newitem.hidden_tag() }}
 				<label for='newitem' class='control-label'><h5>Add item:</h5></label>
 
@@ -126,13 +139,15 @@
 
 				<div class="form-group" >
 				<button type="submit" class='btn btn-default btn-sm'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-				
+
 				</div>
 			</form>
-		  </div>
-	  	{% endif %}
-    </footer>
-
+			{% endif %}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 	{% endif %}
 
 {% endblock %}

@@ -2942,7 +2942,7 @@ input[type="button"].btn-block {
 }
 @media (min-width: 768px) {
   .navbar-right .dropdown-menu {
-    right: 0;
+    right: auto;
     left: auto;
   }
 }
@@ -3776,7 +3776,6 @@ textarea.input-group-sm > .input-group-btn > .btn {
     float: left !important;
   }
   .navbar-right {
-    float: right !important;
   }
 }
 .navbar-form {
