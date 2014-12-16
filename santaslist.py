@@ -37,7 +37,7 @@ class User(UserMixin):
 
     def add(self):
         curs.execute('''INSERT INTO users 
-        	values('%s','%s','%s','%s');'''%(self.username,self.password,self.display_name,self.naughty))
+        	values($$%s$$,$$%s$$,$$%s$$,$$%s$$);'''%(self.username,self.password,self.display_name,self.naughty))
         conn.commit()
 
 class Anonymous(AnonymousUserMixin):
@@ -51,7 +51,7 @@ login_manager.anonymous_user = Anonymous
 def load_user(username):
     curs.execute('''SELECT user_name,password,display_name,naughty 
     	from users 
-    	where user_name = '%s' ''' % username)
+    	where user_name = $$%s$$ ''' % username)
     userrow = curs.fetchone()
     if userrow is not None:
     	user = User(userrow[0],userrow[1],userrow[2],userrow[3])
@@ -91,7 +91,7 @@ def copy(list_id):
 	curs.execute('''SELECT list_name FROM list WHERE list_id=%s'''%list_id)
 	listname = curs.fetchone()[0]
 
-	curs.execute(''' INSERT INTO list (list_name,user_name) values('%s','%s') RETURNING list_id'''%(listname,current_user.username))
+	curs.execute(''' INSERT INTO list (list_name,user_name) values($$%s$$,$$%s$$) RETURNING list_id'''%(listname,current_user.username))
 	listid = curs.fetchone()[0]
 
 	curs.execute(''' SELECT * FROM list JOIN list_item USING(list_id) JOIN item USING(item_id) WHERE list_id=%s'''%list_id)
@@ -104,7 +104,7 @@ def copy(list_id):
 
 @app.route('/deletelist/<list_id>',methods=['GET','POST'])
 def deletelist(list_id):
-	curs.execute('''DELETE FROM list_item WHERE list_item.list_id = '%s' ''' % list_id)
+	curs.execute('''DELETE FROM list_item WHERE list_item.list_id = $$%s$$ ''' % list_id)
 	curs.execute('''DELETE FROM list WHERE list.list_id = %s''' % list_id)
 	conn.commit()
 	return redirect('/')
@@ -134,7 +134,7 @@ def profile(username):
 	curs.execute('''SELECT list.list_id,list.list_name 
 		FROM users, list 
 		WHERE list.user_name = users.user_name 
-		and list.user_name='%s';'''%username)
+		and list.user_name=$$%s$$;'''%username)
 
 	lists = curs.fetchall()
 	mylists = []
@@ -166,13 +166,13 @@ def profile(username):
 
 		curs.execute('''SELECT item.item_name, item.item_price, item.item_link 
 			FROM item 
-			WHERE item.item_name='%s' AND item.item_price='%s' AND item.item_link='%s' '''%(newitem.name.data,newitem.price.data,newitem.website.data))
+			WHERE item.item_name=$$%s$$ AND item.item_price=$$%s$$ AND item.item_link=$$%s$$ '''%(newitem.name.data,newitem.price.data,newitem.website.data))
 
 		c = curs.fetchone()
 		if c is None:
 			curs.execute('''INSERT into 
 				item (item_name,item_price,item_link)
-				values('%s','%s','%s') RETURNING item_id''' % (newitem.name.data,newitem.price.data,newitem.website.data))
+				values($$%s$$,$$%s$$,$$%s$$) RETURNING item_id''' % (newitem.name.data,newitem.price.data,newitem.website.data))
 		
 			itemID = curs.fetchone()[0]
 
@@ -187,7 +187,7 @@ def profile(username):
 
 	if newlist.validate_on_submit() :
 		curs.execute('''INSERT INTO list (list_name,user_name) 
-			values('%s','%s')''' % (newlist.name.data,username))
+			values($$%s$$,$$%s$$)''' % (newlist.name.data,username))
 
 		conn.commit()
 		return redirect('/user/%s' % username)
@@ -223,13 +223,13 @@ def login():
 
 		curs.execute('''SELECT user_name 
 			FROM users 
-			WHERE user_name = '%s';''' % g.user)
+			WHERE user_name = $$%s$$;''' % g.user)
 
 		c = curs.fetchone()
 		if c is not None:
 			curs.execute('''SELECT password 
 				FROM users 
-				WHERE password = '%s';''' % g.password)
+				WHERE password = $$%s$$;''' % g.password)
 
 			correct = curs.fetchone()
 			if correct:
@@ -238,9 +238,17 @@ def login():
 				return redirect("/user/%s" % g.user)
 
 			else:
-				return 'Incorrect password'
+				return render_template('login.html',
+						form=form,
+						curruser=current_user,
+						search=search,
+						validuser=False)
 		else:
-			return 'User does not exist'
+			return render_template('login.html',
+						form=form,
+						curruser=current_user,
+						search=search,
+						validuser=False)
 
 	if search.validate_on_submit():
 		return redirect('/search/%s'%search.keyword.data)
@@ -248,7 +256,8 @@ def login():
 	return render_template('login.html',
 		form=form,
 		curruser=current_user,
-		search=search)
+		search=search,
+		validuser=True)
 
 @app.route('/logout', methods=['GET','POST'])
 def logout():
@@ -271,7 +280,7 @@ def signup():
 
 		curs.execute('''SELECT user_name 
 			FROM users 
-			WHERE user_name = '%s';'''% user)
+			WHERE user_name = $$%s$$;'''% user)
 
 		c = curs.fetchone()
 		if c is None:
@@ -283,7 +292,8 @@ def signup():
 			return render_template('signup.html',
 				form=form,
 				curruser=current_user,
-				search=search)
+				search=search,
+				validuser=False)
 
 	if search.validate_on_submit():
 		return redirect('/search/%s'%search.keyword.data)
@@ -291,7 +301,8 @@ def signup():
 	return render_template('signup.html',
 		form=form,
 		curruser=current_user,
-		search=search)
+		search=search,
+		validuser=True)
 
 @app.route('/search/<keyword>', methods=['GET','POST'])
 def search(keyword):

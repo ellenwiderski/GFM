@@ -9,6 +9,9 @@
 
 {% block content %}
 	<h3> Sign up to make your wishlist </h3>
+	{% if not validuser %}
+		<p> Username is already taken </p>
+	{% endif %}
 	<form action='' method='post' name='login' class='form-horizontal'>
 		{{ form.hidden_tag() }}
 
