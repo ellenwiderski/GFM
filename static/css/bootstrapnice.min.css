@@ -2969,8 +2969,7 @@ input[type="button"].btn-block {
 .btn-group,
 .btn-group-vertical {
   position: relative;
-  display: inline-block;
-  vertical-align: middle;
+  display: inline;
 }
 .btn-group > .btn,
 .btn-group-vertical > .btn {
@@ -3107,7 +3106,6 @@ input[type="button"].btn-block {
 }
 .btn-group-vertical > .btn,
 .btn-group-vertical > .btn-group {
-  display: block;
   float: none;
   width: 100%;
   max-width: 100%;

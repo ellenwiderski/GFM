@@ -33,17 +33,17 @@
 	{% for list in listdict %}
 		<ul class="list-group">
 			<li class="list-group-item">
-				<h4 class="list-group-item-heading">{{ list }}</h4>
+				<h4 class="list-group-item-heading">{{ listdict[list][0] }}</h4>
 			{% if curruser == profileuser.username %}
 			<span class="btn-group pull-right">
-				<form role="form" action="/deletelist/{{listdict[list][0]}}" method='post'>
+				<form role="form" action="/deletelist/{{ list }}" method='post'>
 					<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">Delete <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
 				</button>
 				</form>
 			</span>
 			{% else %}
 			<span class="btn-group pull-right">
-				<form role="form" action="/copy/{{listdict[list][0]}}" method='post'>
+				<form role="form" action="/copy/{{list}}" method='post'>
 					<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">Copy
 			  		<span class="fa fa-files-o" aria-hidden="true"></span>
 				</button>
@@ -68,7 +68,7 @@
 
 						{% if curruser == profileuser.username %}
 						<span class="btn-group pull-right">
-							<form role="form" action="/deleteitem/{{listdict[list][0]}}/{{item[2]}}" method='post' name='delItem'>
+							<form role="form" action="/deleteitem/{{list}}/{{item[2]}}" method='post' name='delItem'>
 								<button type="submit" class="btn btn-default btn-no-border btn-sm pull-right">
 						 			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 								</button>
@@ -80,7 +80,7 @@
 				{% endfor %}
 
 			{% else %}
-				<li class="list-group-item"> No items in {{ list }} :( </li>
+				<li class="list-group-item"> No items in {{ listdict[list][0] }} :( </li>
 			{% endif %}
 		</ul>
 	{% endfor %}
@@ -91,7 +91,7 @@
     <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
       <div class="container add">
 
-    	<form role="form" action='' method='post' name='newitem' class='form-inline pull-left'>
+    	<form role="form" action='' method='post' name='newlist' class='form-inline pull-left'>
 			{{ newlist.hidden_tag() }}
 			<label for='newlist' class='control-label'><h5>Add list:</h5></label>
 			<div class='form-group'>
@@ -105,21 +105,28 @@
 			<form role="form" action='' method='post' name='newitem' class='form-inline pull-right'>
 				{{ newitem.hidden_tag() }}
 				<label for='newitem' class='control-label'><h5>Add item:</h5></label>
+
 				<div class="form-group" >
 					{{ newitem.name(class='form-control',id='newitem',placeholder="New item name") }}
 				</div>
+
 				<div class="form-group" >
 					{{ newitem.price(class='form-control',id='price',placeholder="Price") }}
 				</div>
+
 				<label for='newitem' class='control-label'><h5>http://www.</h5></label>
+
 				<div class="form-group" >
 					{{ newitem.website(class='form-control',id='website',placeholder="example.com") }}
 				</div>
+
 				<div class="form-group" >
 				    {{newitem.forList(class='form-control')}} 
 				</div>
+
 				<div class="form-group" >
 				<button type="submit" class='btn btn-default btn-sm'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+				
 				</div>
 			</form>
 		  </div>

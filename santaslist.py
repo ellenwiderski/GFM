@@ -3,7 +3,7 @@ from flask.ext.login import LoginManager, login_user, UserMixin, logout_user, lo
 from flask.ext.wtf import Form
 from wtforms import TextField, PasswordField, IntegerField, BooleanField, RadioField, SelectField
 from wtforms.fields.html5 import URLField
-from wtforms.validators import InputRequired, url, Optional
+from wtforms.validators import DataRequired, url, Optional
 import psycopg2
 
 
@@ -62,28 +62,28 @@ def load_user(username):
     return user
 
 class LoginForm(Form):
-	username = TextField('Username',validators=[InputRequired()])
-	password = PasswordField('Password',validators=[InputRequired()])
+	username = TextField('Username',validators=[DataRequired()])
+	password = PasswordField('Password',validators=[DataRequired()])
 	remember = BooleanField('remember')
 
 class SignupForm(Form):
-	username = TextField('Username',validators=[InputRequired()])
-	password = PasswordField('Password',validators=[InputRequired()])
-	retypepassword = PasswordField('RetypePassword',validators=[InputRequired()])
-	display_name = TextField('DisplayName',validators=[InputRequired()])
-	naughtynice = RadioField('NaughtyOrNice',choices=[('naughty','Naughty'),('nice','Nice')],validators=[InputRequired()])
+	username = TextField('Username',validators=[DataRequired()])
+	password = PasswordField('Password',validators=[DataRequired()])
+	retypepassword = PasswordField('RetypePassword',validators=[DataRequired()])
+	display_name = TextField('DisplayName',validators=[DataRequired()])
+	naughtynice = RadioField('NaughtyOrNice',choices=[('naughty','Naughty'),('nice','Nice')],validators=[DataRequired()])
 
 class NewItem(Form):
-	name = TextField('additem',validators=[InputRequired()])
+	name = TextField('additem',validators=[DataRequired()])
 	forList = SelectField('forList')
 	website = TextField('website')
 	price = TextField('price')
 
 class NewList(Form):
-	name = TextField('newlist',validators=[InputRequired()])
+	name = TextField('newlist',validators=[DataRequired()])
 
 class Search(Form):
-	keyword = TextField('keyword',validators=[InputRequired()])
+	keyword = TextField('keyword',validators=[DataRequired()])
 
 
 @app.route('/copy/<list_id>',methods=['GET','POST'])
@@ -131,10 +131,9 @@ def profile(username):
 	listdict = {}
 	choices = []
 
-	curs.execute('''SELECT list.list_id,list.list_name 
-		FROM users, list 
-		WHERE list.user_name = users.user_name 
-		and list.user_name=$$%s$$;'''%username)
+	curs.execute('''SELECT list.list_id, list.list_name 
+		FROM users JOIN list USING(user_name) 
+		WHERE list.user_name=$$%s$$;'''%username)
 
 	lists = curs.fetchall()
 	mylists = []
@@ -143,7 +142,7 @@ def profile(username):
 		mylists.append(mylist)
 
 	for mylist in mylists:
-		choices.append((mylist[1],mylist[1]))
+		choices.append((str(mylist[0]),mylist[1]))
 		curs.execute('''SELECT item.item_name,item.item_link, item.item_id, item.item_price
 			FROM item JOIN list_item USING(item_id) JOIN list USING(list_id) 
 			WHERE list.list_id=%s;'''%mylist[0])
@@ -158,17 +157,19 @@ def profile(username):
 		for item in items:
 			listitems.append(item)
 
-		listdict[list_name] = (list_id,listitems)
+		listdict[list_id] = (list_name,listitems)
 
 	newitem.forList.choices = choices
 
 	if newitem.validate_on_submit():
 
-		curs.execute('''SELECT item.item_name, item.item_price, item.item_link 
+		curs.execute('''SELECT item.item_name, item.item_price, item.item_link, item.item_id
 			FROM item 
 			WHERE item.item_name=$$%s$$ AND item.item_price=$$%s$$ AND item.item_link=$$%s$$ '''%(newitem.name.data,newitem.price.data,newitem.website.data))
 
 		c = curs.fetchone()
+		
+
 		if c is None:
 			curs.execute('''INSERT into 
 				item (item_name,item_price,item_link)
@@ -176,11 +177,13 @@ def profile(username):
 		
 			itemID = curs.fetchone()[0]
 
-		list_name = newitem.forList.data
-		listID = listdict[list_name][0]
+		else:
+			itemID = c[3]
+
+		listid = int(newitem.forList.data)
 		
 		curs.execute('''INSERT into list_item 
-			values(%s,%s) '''%(itemID,listID))
+			values(%s,%s) '''%(itemID,listid))
 
 		conn.commit()
 		return redirect('/user/%s' % username)

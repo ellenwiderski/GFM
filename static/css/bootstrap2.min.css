@@ -2967,14 +2967,11 @@ input[type="button"].btn-block {
 }
 .btn-group,
 .btn-group-vertical {
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
+  display: inline;
 }
 .btn-group > .btn,
 .btn-group-vertical > .btn {
-  position: relative;
-  float: left;
+
 }
 .btn-group > .btn:hover,
 .btn-group-vertical > .btn:hover,
